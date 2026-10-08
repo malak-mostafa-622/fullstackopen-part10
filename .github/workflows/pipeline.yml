@@ -7,17 +7,30 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize]
 
 jobs:
-  test_and_lint:
+  avoid_redundant_ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  simple_test_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+
       - name: Install dependencies
         run: npm install
+
       - name: Lint
         run: npm run lint
